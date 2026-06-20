@@ -146,6 +146,12 @@
           </div>
         </div>
 
+        <button class="filter-toggle-btn" id="btn-toggle-manual-form" type="button">
+          <span>📝 Kézi verseny rögzítés (MTT / egyéb)</span>
+          <span class="ftb-arrow" id="manual-form-arrow">▶</span>
+        </button>
+
+        <div id="manual-form-wrapper" class="hidden">
         <form id="tournament-form">
           <div class="field" style="grid-column:span 2;">
             <label for="name">Verseny neve</label>
@@ -175,6 +181,7 @@
         <div class="hint-row">
           <small></small>
           <div id="form-error" class="error-msg"></div>
+        </div>
         </div>
 
         <!-- SECTION: VERSENY TÁBLÁZAT -->
@@ -260,7 +267,7 @@
       </section>
 
       <section class="card-section">
-        <div class="card-header"><div><h2>Aktuális terem statisztika</h2><small></small></div></div>
+        <div class="card-header"><div><h2>📊 Aktuális terem statisztika</h2><small></small></div></div>
         <div class="summary-grid">
           <div class="summary-card">
             <div class="summary-card-header"><span>Aktuális terem</span><span id="summary-room-label" class="summary-label">GGPoker</span></div>
@@ -297,7 +304,7 @@
           </div>
         </div>
         <div class="summary-card">
-          <div class="summary-card-header"><span>Profit érzet</span><span class="summary-label">aktuális terem ROI alapján</span></div>
+          <div class="summary-card-header"><span>🌡️ Profit érzet</span><span class="summary-label">aktuális terem ROI alapján</span></div>
           <div class="sparkline" id="sparkline-room">
             <div class="sparkline-track"></div>
             <div class="sparkline-needle" id="sparkline-room-needle" style="left:calc(50% - 2px);background:rgb(148,163,184);box-shadow:rgba(148,163,184,0.9) 0px 0px 10px;"></div>
@@ -308,12 +315,12 @@
     </main>
 
     <section class="card-section hidden" id="summary-layout">
-      <div class="card-header"><div><h2>Összesített nézet</h2><small></small></div></div>
+      <div class="card-header"><div><h2>🌍 Összesített nézet</h2><small></small></div></div>
       <div class="summary-grid-3" style="grid-template-columns:1fr;">
         <div class="summary-card overview-card">
-          <div class="summary-card-header"><span>Összesített profit és költségek</span><span class="summary-label">888 + GG</span></div>
+          <div class="summary-card-header"><span>📊 Összesített profit és költségek</span><span class="summary-label">888 + GG</span></div>
           <div class="overview-hero">
-            <div class="overview-hero-label">Összprofit</div>
+            <div class="overview-hero-label">💰 Összprofit</div>
             <strong class="overview-hero-value" id="all-profit">0.00 $</strong>
             <div class="summary-label" style="font-size:12px;margin-top:4px;">Freebuy nélkül: <span id="all-profit-nofree">0.00 $</span></div>
             <div class="overview-hero-chips"><span class="chip gold" id="all-roi-chip">ROI: 0.0%</span><span class="chip blue" id="all-avg-percentile-chip">Átlag mezőny%: -</span></div>
@@ -328,7 +335,7 @@
         </div>
       </div>
       <div class="summary-card">
-        <div class="summary-card-header"><span>Profit érzet</span><span class="summary-label">összesített minta</span></div>
+        <div class="summary-card-header"><span>🌡️ Profit érzet</span><span class="summary-label">összesített minta</span></div>
         <div class="sparkline" id="sparkline-all">
           <div class="sparkline-track"></div>
           <div class="sparkline-needle" id="sparkline-all-needle" style="left:calc(50% - 2px);background:rgb(148,163,184);box-shadow:rgba(148,163,184,0.9) 0px 0px 10px;"></div>
@@ -338,7 +345,7 @@
       </div>
       <div class="summary-grid summary-grid-3">
         <div class="summary-card">
-          <div class="summary-card-header"><span>888poker statok</span><span class="summary-label">termenszintű</span></div>
+          <div class="summary-card-header"><span>🎰 888poker statok</span><span class="summary-label">termenszintű</span></div>
           <table class="stats-table"><tbody>
             <tr><th>Mutató</th><th>Érték</th></tr>
             <tr><td>Lejátszott versenyek</td><td id="sum-888-games">0</td></tr>
@@ -353,7 +360,7 @@
           </tbody></table>
         </div>
         <div class="summary-card">
-          <div class="summary-card-header"><span>GGPoker statok</span><span class="summary-label">termenszintű</span></div>
+          <div class="summary-card-header"><span>🃏 GGPoker statok</span><span class="summary-label">termenszintű</span></div>
           <table class="stats-table"><tbody>
             <tr><th>Mutató</th><th>Érték</th></tr>
             <tr><td>Lejátszott versenyek</td><td id="sum-gg-games">0</td></tr>
@@ -368,7 +375,7 @@
           </tbody></table>
         </div>
         <div class="summary-card">
-          <div class="summary-card-header"><span>Összesített statok</span><span class="summary-label">888 + GG</span></div>
+          <div class="summary-card-header"><span>🌍 Összesített statok</span><span class="summary-label">888 + GG</span></div>
           <table class="stats-table"><tbody>
             <tr><th>Mutató</th><th>Érték</th></tr>
             <tr><td>Lejátszott versenyek</td><td id="sum-all-games">0</td></tr>
@@ -385,7 +392,7 @@
       </div>
       <div class="summary-grid-2" style="margin-top:14px;">
         <div class="summary-card">
-          <div class="summary-card-header"><span>Időszak összegzés</span><span class="summary-label">heti / havi / éves / egyéni</span></div>
+          <div class="summary-card-header"><span>📅 Időszak összegzés</span><span class="summary-label">heti / havi / éves / egyéni</span></div>
           <div class="period-filter" id="period-summary-filter" style="margin-bottom:8px;">
             <button class="period-btn active" data-psum="today">Mai</button>
             <button class="period-btn" data-psum="week">Hét</button>
@@ -411,7 +418,7 @@
           </div>
         </div>
         <div class="summary-card">
-          <div class="summary-card-header"><span>Versenytípusok</span><span class="summary-label">minden típus külön</span></div>
+          <div class="summary-card-header"><span>🏷️ Versenytípusok</span><span class="summary-label">minden típus külön</span></div>
           <div class="summary-label" style="margin-bottom:4px;">Típusonként (terem · forma · max · belépő)</div>
           <div class="table-scroll">
             <table class="stats-table" id="tourney-type-table"><tbody><tr><th>Típus</th><th>Db</th><th>Profit</th><th>ROI</th><th>ITM%</th></tr></tbody></table>

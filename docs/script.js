@@ -88,7 +88,7 @@
     const SNG_LOOKUP = {
       ggpoker: {
         'sng_0.25_3max': {
-          name: 'Spin&Gold $0.25 – 3-max',
+          name: 'SNG $0.25 – 3-max',
           buy_in: 0.25,
           players: 3,
           gameType: 'SNG',
@@ -103,7 +103,7 @@
           }
         },
         'sng_1.00_3max': {
-          name: 'Spin&Gold $1.00 – 3-max',
+          name: 'SNG $1.00 – 3-max',
           buy_in: 1.00,
           players: 3,
           gameType: 'SNG',
@@ -118,7 +118,7 @@
           }
         },
         'sng_0.25_6max': {
-          name: 'Spin&Gold $0.25 – 6-max',
+          name: 'SNG $0.25 – 6-max',
           buy_in: 0.25,
           players: 6,
           gameType: 'SNG',
@@ -133,7 +133,7 @@
           }
         },
         'sng_1.00_6max': {
-          name: 'Spin&Gold $1.00 – 6-max',
+          name: 'SNG $1.00 – 6-max',
           buy_in: 1.00,
           players: 6,
           gameType: 'SNG',
@@ -150,7 +150,7 @@
       },
       '888poker': {
         'sng_0.10_3max': {
-          name: 'BLAST $0.10 – 3-max',
+          name: 'SNG $0.10 – 3-max',
           buy_in: 0.10,
           players: 3,
           gameType: 'SNG',
@@ -164,7 +164,7 @@
           }
         },
         'sng_0.50_3max': {
-          name: 'BLAST $0.50 – 3-max',
+          name: 'SNG $0.50 – 3-max',
           buy_in: 0.50,
           players: 3,
           gameType: 'SNG',
@@ -318,7 +318,7 @@
       const entry = {
         id: Date.now()+'_'+Math.random().toString(36).slice(2),
         room: targetRoom,
-        name: tournament.name + ' – ' + multiplierKey,
+        name: tournament.name,
         gameType: tournament.gameType || 'SNG',
         date: getLocalDateString(),
         buyIn,
@@ -818,18 +818,37 @@
 
     function applySparkline(el, needleEl, textEl, stats, label) {
       if (stats.games === 0 || stats.totalCost === 0) {
-        needleEl.style.left='calc(50% - 2px)'; needleEl.style.background='#94a3b8'; needleEl.style.boxShadow='0 0 10px rgba(148,163,184,0.9)'; textEl.textContent='Még nincs elég adat'; return;
+        needleEl.style.left='calc(50% - 2px)'; needleEl.style.background='#94a3b8'; needleEl.style.boxShadow='0 0 10px rgba(148,163,184,0.9)'; textEl.textContent='⏳ Még nincs elég adat'; return;
       }
-      const roi = stats.roi, clamped = Math.max(-150,Math.min(150,roi)), pct = 50+(clamped/150)*50;
+      // Poker-realistic ROI scale: -40% to +40%
+      // In SnG/MTT micro-stakes:
+      //   -40% or worse = terrible leak
+      //   -15% to -5%   = losing player
+      //   -5% to +5%    = breakeven zone
+      //   +5% to +15%   = solid winning player
+      //   +15% to +25%  = crushing it
+      //   +25%+         = elite (very rare long-term)
+      const roi = stats.roi;
+      const maxROI = 40;
+      const clamped = Math.max(-maxROI, Math.min(maxROI, roi));
+      const pct = 50 + (clamped / maxROI) * 50;
       needleEl.style.left = 'calc('+pct+'% - 2px)';
       let r,g,b;
       if (pct<=50) { const t=pct/50; r=Math.round(239-(239-100)*t); g=Math.round(68+(116-68)*t); b=Math.round(68+(139-68)*t); }
       else { const t=(pct-50)/50; r=Math.round(100-(100-34)*t); g=Math.round(116+(197-116)*t); b=Math.round(139-(139-94)*t); }
       const col='rgb('+r+','+g+','+b+')';
       needleEl.style.background = col; needleEl.style.boxShadow = '0 0 14px '+col;
-      if (roi > 0.3) textEl.textContent='Pluszban vagy '+label+' ('+formatPercent(roi)+' ROI)';
-      else if (roi < -0.3) textEl.textContent='Mínuszban vagy '+label+' ('+formatPercent(roi)+' ROI)';
-      else textEl.textContent='Közel breakeven '+label+' ('+formatPercent(roi)+' ROI)';
+      // Poker-specific tiered feedback
+      let emoji, desc;
+      if (roi >= 25)       { emoji='🏆'; desc='Elképesztő forma! Elit szint'; }
+      else if (roi >= 15)  { emoji='🔥'; desc='Nagyon erős, hosszú távon is kiváló'; }
+      else if (roi >= 5)   { emoji='💪'; desc='Nyerő játékos, szép munka'; }
+      else if (roi >= 1)   { emoji='📈'; desc='Enyhén pluszban, jó irány'; }
+      else if (roi >= -1)  { emoji='⚖️'; desc='Breakeven zóna'; }
+      else if (roi >= -5)  { emoji='📉'; desc='Enyhén mínuszban'; }
+      else if (roi >= -15) { emoji='😰'; desc='Veszteséges, érdemes elemezni'; }
+      else                 { emoji='🚨'; desc='Komoly leak, változtatni kell'; }
+      textEl.textContent = emoji + ' ' + desc + ' ' + label + ' (' + formatPercent(roi) + ' ROI)';
     }
 
     // === FIX 3: Mentett szűrők (localStorage) ===
@@ -910,6 +929,13 @@
       document.getElementById('submit-btn').textContent='Mentés';
       document.getElementById('btn-cancel-edit').classList.remove('hidden');
       document.getElementById('editing-indicator').classList.remove('hidden');
+      // Auto-expand manual form if hidden
+      const formWrapper=document.getElementById('manual-form-wrapper');
+      const formArrow=document.getElementById('manual-form-arrow');
+      if(formWrapper&&formWrapper.classList.contains('hidden')){
+        formWrapper.classList.remove('hidden');
+        if(formArrow)formArrow.textContent='▼';
+      }
       document.getElementById('tournament-form').scrollIntoView({behavior:'smooth',block:'start'});
     }
     function clearEditMode() {
@@ -1316,6 +1342,18 @@
           const arrow=document.getElementById('filter-toggle-arrow');
           const isHidden=panel.classList.contains('hidden');
           panel.classList.toggle('hidden',!isHidden);
+          if(arrow) arrow.textContent=isHidden?'▼':'▶';
+        });
+      }
+
+      // Manual form toggle button
+      const btnToggleManualForm=document.getElementById('btn-toggle-manual-form');
+      if(btnToggleManualForm){
+        btnToggleManualForm.addEventListener('click',()=>{
+          const wrapper=document.getElementById('manual-form-wrapper');
+          const arrow=document.getElementById('manual-form-arrow');
+          const isHidden=wrapper.classList.contains('hidden');
+          wrapper.classList.toggle('hidden',!isHidden);
           if(arrow) arrow.textContent=isHidden?'▼':'▶';
         });
       }
